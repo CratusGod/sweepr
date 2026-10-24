@@ -1,0 +1,20 @@
+[package]
+name = "sweepr"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.104"
+clap = { version = "4.6.7", features = ["derive"] }
+clap_complete = "4.6.11"
+clap_mangen = "0.3.3"
+globset = "0.4.20"
+jiff = { version = "0.2.38", features = ["serde"] }
+notify-rust = "4.18.2"
+rustix = { version = "1.1.5", features = ["fs", "process"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+toml = "1.1.8"
+
+[dev-dependencies]
+tempfile = "3.27.0"

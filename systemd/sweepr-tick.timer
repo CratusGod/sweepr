@@ -1,0 +1,11 @@
+[Unit]
+Description=Hourly sweepr housekeeping
+Documentation=https://github.com/CratusGod/sweepr
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+RandomizedDelaySec=5min
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,14 @@
+post_install() {
+  cat <<'MSG'
+==> sweepr is installed. Turn on its timers as your normal user (not root):
+      systemctl --user enable --now sweepr.timer sweepr-tick.timer
+==> Scheduled runs only preview until you review and enable them:
+      sweepr scan -v
+      sweepr enable
+MSG
+}
+
+post_upgrade() {
+  # pacman runs as root and cannot reach your user manager, so ask instead.
+  echo "==> sweepr updated. Run as your user: systemctl --user daemon-reload"
+}

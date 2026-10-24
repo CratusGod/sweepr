@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - name: Install toolchain
+        run: pacman -Syu --noconfirm rust gcc git base-devel cargo-llvm-cov
+      - uses: actions/checkout@v4
+      - name: Format
+        run: cargo fmt --check
+      - name: Lint
+        run: cargo clippy --locked --all-targets -- -D warnings
+      # Run as a normal user, the way sweepr itself runs.
+      - name: Test with coverage
+        run: |
+          useradd -m tester
+          chown -R tester .
+          su tester -c 'cargo llvm-cov --locked --fail-under-lines 80'
+      - name: Validate systemd units
+        run: |
+          for u in systemd/*; do sed "s#/usr/bin/sweepr#/usr/bin/true#" "$u" > "/tmp/$(basename "$u")"; done
+          systemd-analyze verify /tmp/sweepr*.service /tmp/sweepr*.timer
+      - name: Build the package
+        run: su tester -c 'cd packaging/local && makepkg --noconfirm -f -c --nocheck'

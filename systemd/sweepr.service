@@ -1,0 +1,11 @@
+[Unit]
+Description=sweepr: move old caches and trash into quarantine
+Documentation=https://github.com/CratusGod/sweepr
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/sweepr run --scheduled
+Nice=19
+IOSchedulingClass=idle
+# The notification waits up to 10 minutes for a click.
+TimeoutStartSec=15min

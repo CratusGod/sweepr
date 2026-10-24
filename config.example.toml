@@ -1,0 +1,31 @@
+# sweepr config: copy to ~/.config/sweepr/config.toml and edit.
+# Every key is optional. Unknown keys are an error, so typos fail loudly.
+# `sweepr rules` shows the result.
+
+# Default age for every rule, in days.
+age_days = 30
+
+# How long moved files stay in quarantine before they are deleted for good.
+grace_days = 7
+
+# `sweepr tick` (hourly) warns once a day when your home disk is this full.
+disk_warn_percent = 90
+
+# Change a built-in rule. Names come from `sweepr rules`.
+[rules.downloads]
+enabled = true      # off by default
+age_days = 90
+
+[rules.npm]
+# Globs inside the rule's folder. Without a "/", they match at any depth.
+exclude = ["index-v5/**"]
+
+# Add your own folder. Paths must be absolute or start with ~/.
+[[custom]]
+name = "screenshots"
+path = "~/Pictures/Screenshots"
+age_source = "mtime"   # "mtime", or "trashinfo" for a FreeDesktop trash folder
+unit = "file"          # "file" moves single files; "entry" moves whole top-level folders
+age_days = 60
+exclude = ["*.keep.png"]
+# allow_protected = true   # needed only to clean inside a protected folder

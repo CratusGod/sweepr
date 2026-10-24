@@ -1,0 +1,50 @@
+# AUR package: builds the tagged release from GitHub.
+pkgname=sweepr
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Moves old caches and trash into an undoable quarantine, deletes them after a grace period"
+arch=('x86_64' 'aarch64')
+url="https://github.com/CratusGod/sweepr"
+license=('MIT')
+depends=('gcc-libs' 'glibc')
+makedepends=('cargo')
+optdepends=('xdg-utils: open run details from the notification')
+install=sweepr.install
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('SKIP')  # run `updpkgsums` after tagging the release
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  export RUSTUP_TOOLCHAIN=stable
+  cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  export RUSTUP_TOOLCHAIN=stable
+  cargo build --frozen --release
+  local bin=target/release/sweepr gen=target/release/gen
+  "$bin" generate man --dir "$gen/man"
+  "$bin" generate bash > "$gen/sweepr.bash"
+  "$bin" generate zsh > "$gen/_sweepr"
+  "$bin" generate fish > "$gen/sweepr.fish"
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  export RUSTUP_TOOLCHAIN=stable
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm755 target/release/sweepr "$pkgdir/usr/bin/sweepr"
+  install -Dm644 systemd/*.service systemd/*.timer -t "$pkgdir/usr/lib/systemd/user/"
+  install -Dm644 config.example.toml README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  local gen=target/release/gen
+  install -Dm644 "$gen"/man/*.1 -t "$pkgdir/usr/share/man/man1/"
+  install -Dm644 "$gen/sweepr.bash" "$pkgdir/usr/share/bash-completion/completions/sweepr"
+  install -Dm644 "$gen/_sweepr" -t "$pkgdir/usr/share/zsh/site-functions/"
+  install -Dm644 "$gen/sweepr.fish" -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+}

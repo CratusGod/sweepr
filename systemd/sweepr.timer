@@ -1,0 +1,11 @@
+[Unit]
+Description=Monthly sweepr run
+Documentation=https://github.com/CratusGod/sweepr
+
+[Timer]
+OnCalendar=monthly
+Persistent=true
+RandomizedDelaySec=1h
+
+[Install]
+WantedBy=timers.target

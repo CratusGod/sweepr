@@ -1,0 +1,10 @@
+[Unit]
+Description=sweepr: purge expired quarantine, warn when the disk is nearly full
+Documentation=https://github.com/CratusGod/sweepr
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/sweepr tick
+Nice=19
+IOSchedulingClass=idle
+TimeoutStartSec=15min
