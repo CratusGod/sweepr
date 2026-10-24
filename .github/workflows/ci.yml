@@ -11,8 +11,10 @@ jobs:
     container: archlinux:latest
     steps:
       - name: Install toolchain
-        run: pacman -Syu --noconfirm rust gcc git base-devel cargo-llvm-cov llvm
+        run: pacman -Syu --noconfirm rust gcc git base-devel cargo-llvm-cov llvm shellcheck sudo
       - uses: actions/checkout@v4
+      - name: Shellcheck
+        run: shellcheck install.sh
       - name: Format
         run: cargo fmt --check
       - name: Lint
@@ -28,5 +30,10 @@ jobs:
         run: |
           for u in systemd/*; do sed "s#/usr/bin/sweepr#/usr/bin/true#" "$u" > "/tmp/$(basename "$u")"; done
           systemd-analyze verify /tmp/sweepr*.service /tmp/sweepr*.timer
-      - name: Build the package
-        run: su tester -c 'cd packaging/local && makepkg --noconfirm -f -c --nocheck'
+      # The real install script, on this commit instead of main.
+      - name: Install with install.sh
+        run: |
+          echo 'tester ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/tester
+          su tester -c 'SWEEPR_SRC="$PWD" SWEEPR_REF="$(git rev-parse HEAD)" bash install.sh'
+          sweepr --version
+          test -f /usr/share/man/man1/sweepr.1

@@ -38,25 +38,25 @@ sweepr also:
 
 ## Install
 
-From the AUR (once published):
+As your normal user (not root):
 
 ```
-yay -S sweepr
+curl -fsSL https://raw.githubusercontent.com/CratusGod/sweepr/main/install.sh | bash
 ```
 
-From source:
+It builds the package from source, installs it with pacman (asking for your password), and turns on the timers. Run the same command again to update. Then:
+
+```
+sweepr scan -v      # see exactly what would move
+sweepr enable       # let the monthly run move files
+```
+
+Or by hand:
 
 ```
 git clone https://github.com/CratusGod/sweepr
 cd sweepr/packaging/local && makepkg -si
-```
-
-Then, as your normal user:
-
-```
 systemctl --user enable --now sweepr.timer sweepr-tick.timer
-sweepr scan -v      # see exactly what would move
-sweepr enable       # let the monthly run move files
 ```
 
 ## Commands
