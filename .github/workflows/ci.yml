@@ -11,18 +11,19 @@ jobs:
     container: archlinux:latest
     steps:
       - name: Install toolchain
-        run: pacman -Syu --noconfirm rust gcc git base-devel cargo-llvm-cov
+        run: pacman -Syu --noconfirm rust gcc git base-devel cargo-llvm-cov llvm
       - uses: actions/checkout@v4
       - name: Format
         run: cargo fmt --check
       - name: Lint
         run: cargo clippy --locked --all-targets -- -D warnings
-      # Run as a normal user, the way sweepr itself runs.
+      # Run as a normal user, the way sweepr itself runs. Arch's rust is built
+      # on the system LLVM, so use its tools instead of rustup's llvm-tools.
       - name: Test with coverage
         run: |
           useradd -m tester
           chown -R tester .
-          su tester -c 'cargo llvm-cov --locked --fail-under-lines 80'
+          su tester -c 'LLVM_COV=/usr/bin/llvm-cov LLVM_PROFDATA=/usr/bin/llvm-profdata cargo llvm-cov --locked --fail-under-lines 80'
       - name: Validate systemd units
         run: |
           for u in systemd/*; do sed "s#/usr/bin/sweepr#/usr/bin/true#" "$u" > "/tmp/$(basename "$u")"; done
