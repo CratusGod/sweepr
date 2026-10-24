@@ -2,6 +2,7 @@
 //! then deletes them for good after a grace period.
 
 pub mod app;
+pub mod commands;
 pub mod config;
 pub mod disk;
 pub mod manifest;
