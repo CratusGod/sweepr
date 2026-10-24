@@ -37,4 +37,4 @@ jobs:
           su tester -c 'SWEEPR_SRC="$PWD" SWEEPR_REF="$(git rev-parse HEAD)" bash install.sh'
           sweepr --version
           # The archlinux image never extracts man pages (NoExtract), so ask pacman.
-          pacman -Qlq sweepr | grep -qx /usr/share/man/man1/sweepr.1
+          pacman -Qlq sweepr | grep -qx /usr/share/man/man1/sweepr.1.gz
